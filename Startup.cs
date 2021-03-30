@@ -114,7 +114,6 @@ namespace ElectronServerBlazorEf
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddDbContext<NorthwindContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("NW"));
             });

@@ -1,0 +1,75 @@
+@page "/toon"
+@inject HttpClient HttpClient
+@using System.Net.Http.Headers
+@using Newtonsoft.Json
+@using System;
+@using System.Collections.Generic;
+@using System.Net.Http;
+@using System.Threading.Tasks;
+@using ElectronServerBlazorEf.Models;
+
+
+<h1>Toons</h1>
+
+@if (toons == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Picture URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in toons)
+            {
+                <tr>
+                    <td>@item.FirstName @item.LastName</td>
+                    <td><img src="@item.PictureUrl"/></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    IEnumerable<Toon> toons;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await load();
+    }
+
+    protected async Task load()
+    {
+        toons = await GetToonsAsync();
+    }
+
+    static async Task<IEnumerable<Toon>> GetToonsAsync()
+    {
+        string baseUrl = "https://api4all.azurewebsites.net";
+
+        HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(baseUrl);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            IEnumerable<Toon> toons = null;
+            try {
+                // Get all cartoon characters
+                HttpResponseMessage response = await client.GetAsync("/api/people");
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+                    toons = JsonConvert.DeserializeObject<IEnumerable<Toon>>(json);
+                }
+            } catch (Exception e) {
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+            }
+        return toons;
+    }
+}
