@@ -114,10 +114,12 @@ namespace ElectronServerBlazorEf
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddScoped<NorthwindService>();
+            services.AddScoped<System.Net.Http.HttpClient>();
             services.AddDbContext<NorthwindContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("NW"));
             });
-            services.AddScoped<NorthwindService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -134,7 +136,7 @@ namespace ElectronServerBlazorEf
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
